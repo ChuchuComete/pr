@@ -35,6 +35,11 @@
       <button class="option-button" data-type="region" onclick="selectOption('region', this)">NA West</button>
       <button class="option-button" data-type="region" onclick="selectOption('region', this)">NA East</button>
     </div>
+    <div class="option-group">
+      <p>Sheet Link:</p>
+      <input type="text" name="sheet_link" id="sheet_link_input">
+      <button class="option-button" data-type="region" onclick="song_selection(document.getElementById('sheet_link_input').value)">Update Song List</button>
+    </div>
     <button class="close-button" onclick="closeSettings()">Close</button>
   </div>
 
