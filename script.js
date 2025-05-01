@@ -198,6 +198,53 @@ function recordData(sortType) {
     sortedNo++;
 }
 
+async function song_selection(sheetLink) {
+  try {
+    const baseUrl = sheetLink.split("/edit")[0];
+    const csvUrl = `${baseUrl}/export?format=csv&gid=0`;
+
+    const response = await fetch(csvUrl);
+    if (!response.ok) throw new Error("Erreur lors du téléchargement du fichier CSV.");
+    const csvText = await response.text();
+
+    const rows = csvText.trim().split("\n").map(line => line.split(","));
+    const headers = rows[0];
+    const data = rows.slice(1);
+
+    const jsonData = data.map(row => {
+      const rowObj = {};
+      headers.forEach((header, idx) => {
+        rowObj[header.trim()] = row[idx]?.trim();
+      });
+
+      return {
+        id: rowObj["ID"],
+        anime: `${rowObj["Anime Name"]} - ${rowObj["Song Type"]}`,
+        name: rowObj["Song Info"],
+        video: rowObj["Video"],
+        mp3: rowObj["Mp3"]
+      };
+    });
+
+    // Téléchargement automatique du fichier songList.json
+    downloadJSON(jsonData, 'songList.json');
+
+  } catch (error) {
+    console.error("Erreur :", error.message);
+  }
+}
+
+
+function downloadJSON(data, filename = 'songList.json') {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
 function start() {
     document.querySelector('.title').style.display = "none";
     document.getElementById("start").style.display = "none";
